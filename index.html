@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alkane-Abenteuer (EF)</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:Arial,sans-serif;margin:0;background:#eef7ff;color:#222;padding-bottom:30px}
+  header{background:#1b5e8a;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0004}
+  header h1{margin:0;font-size:1.3em}
+  #rang{font-size:.95em;margin-top:4px}
+  .balken{background:#ffffff44;border-radius:10px;height:10px;margin-top:6px;overflow:hidden}
+  #balkenFuell{background:#f5c400;height:100%;width:0;transition:width .4s}
+  nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  nav button{flex:1;min-width:80px;padding:8px;border:none;border-radius:16px;background:#ffffff33;color:#fff;cursor:pointer;font-size:14px}
+  nav button.aktiv{background:#f5c400;color:#000;font-weight:bold}
+  main{max-width:900px;margin:auto;padding:14px}
+  .seite[hidden]{display:none}
+  h2{color:#1b5e8a;border-bottom:3px dashed #1b5e8a;padding-bottom:4px}
+  .box{background:#fff;border-left:6px solid #1b5e8a;padding:12px 16px;margin:14px 0;border-radius:8px}
+  .merk{background:#fff3c4;border-left-color:#f5a800}
+  table{border-collapse:collapse;width:100%;background:#fff;font-size:.95em}
+  th,td{border:1px solid #bcd;padding:6px;text-align:center}
+  th{background:#1b5e8a;color:#fff}
+  tr:hover td{background:#fff3c4}
+  .karten{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .karte{background:#fff;border-radius:12px;padding:10px;width:250px;text-align:center;box-shadow:0 2px 6px #0003}
+  .btn{padding:9px 16px;border:none;border-radius:20px;background:#1b5e8a;color:#fff;cursor:pointer;font-size:15px;margin:3px}
+  .btn:hover{background:#144a6f}
+  .btn.gelb{background:#f5a800;color:#000}
+  .btn:disabled{cursor:default;opacity:.9}
+  .btn.ok{background:#2e9e44}.btn.nein{background:#d33}
+  .opt{display:block;width:100%;text-align:left;margin:8px 0;border-radius:10px}
+  .fb{margin-top:10px;font-weight:bold;min-height:1.3em}
+  .gut{color:green}.schlecht{color:crimson}
+  .werkzeug{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+  .farbe{width:36px;height:36px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #888;cursor:pointer}
+  .farbe.aktiv{box-shadow:0 0 0 4px #000}
+  #zeichenfeld{background-color:#fff;border:3px solid #1b5e8a;border-radius:12px;width:100%;max-width:600px;height:auto;aspect-ratio:600/320;touch-action:none;display:block;
+    background-image:linear-gradient(#e0ecf5 1px,transparent 1px),linear-gradient(90deg,#e0ecf5 1px,transparent 1px);background-size:30px 30px}
+  input[type=text]{padding:10px;font-size:18px;width:100%;max-width:400px;border:2px solid #1b5e8a;border-radius:8px}
+  .memGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .mem{height:70px;border:none;border-radius:10px;background:#1b5e8a;color:#fff;font-size:15px;cursor:pointer}
+  .mem.offen{background:#fff;color:#000;border:3px solid #f5a800}
+  .mem.fertig{background:#2e9e44;color:#fff}
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20}
+  #toast.an{opacity:1}
+  .klein{font-size:.85em;color:#555}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧪 Das Alkane-Abenteuer</h1>
+  <div id="rang"></div>
+  <div class="balken"><div id="balkenFuell"></div></div>
+  <nav id="nav">
+    <button data-s="lernen">📖 Lernen</button>
+    <button data-s="quiz">🎮 Quiz</button>
+    <button data-s="zeichnen">✏️ Zeichnen</button>
+    <button data-s="benennen">⌨️ Benennen</button>
+    <button data-s="memory">🃏 Memory</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ===================== LERNEN ===================== -->
+<section class="seite" id="lernen">
+  <h2>1. Die homologe Reihe der Alkane</h2>
+  <div class="box">
+    Alkane bestehen nur aus <b>Kohlenstoff (C)</b> und <b>Wasserstoff (H)</b> und haben nur <b>Einfachbindungen</b> (gesättigte Kohlenwasserstoffe).<br>
+    <b>Allgemeine Formel:</b> C<sub>n</sub>H<sub>2n+2</sub><br>
+    <b>Homologe Reihe:</b> Benachbarte Glieder unterscheiden sich immer um eine <b>CH₂-Gruppe</b>.
+  </div>
+  <table id="tabelle"></table>
+  <p class="klein">Siedetemperaturen bei Normaldruck, gerundet.</p>
+  <div class="box merk">
+    💡 <b>Eselsbrücke:</b> <b>M</b>ein <b>E</b>sel <b>P</b>upst <b>B</b>unt → <b>M</b>ethan, <b>E</b>than, <b>P</b>ropan, <b>B</b>utan.<br>
+    Ab 5 C-Atomen kommen griechische Zahlen: Penta (5), Hexa (6), Hepta (7), Okta (8 🐙), Nona (9), Deca (10).
+  </div>
+
+  <h2>2. Methyl, Ethyl oder Propyl?</h2>
+  <div class="box">
+    Eine <b>Seitenkette</b> (Alkyl-Rest) ist ein Zweig an der Hauptkette. Der Name hängt von der <b>Anzahl der C-Atome im Zweig</b> ab.<br>
+    <b>Trick:</b> Aus <b>-an</b> wird <b>-yl</b>: Methan → <b>Methyl</b>, Ethan → <b>Ethyl</b>, Propan → <b>Propyl</b>.
+  </div>
+  <div class="karten" id="kartenReste"></div>
+  <div class="box merk">💡 <b>Merkhilfe:</b> 1 C → <b>M</b>ini = <b>M</b>ethyl | 2 C → <b>E</b>twas länger = <b>E</b>thyl | 3 C → <b>P</b>lus noch eins = <b>P</b>ropyl</div>
+
+  <h2>3. Namen knacken wie ein Profi</h2>
+  <div class="box">
+    <b>Beispiel: 4-Ethyl-6-methylnonan</b> 🔍
+    <ul>
+      <li><b>nonan</b> → Hauptkette mit <b>9</b> C-Atomen</li>
+      <li><b>4-Ethyl</b> → an C4 hängt ein Zweig mit <b>2</b> C-Atomen</li>
+      <li><b>6-methyl</b> → an C6 hängt ein Zweig mit <b>1</b> C-Atom</li>
+      <li>Die Zweige stehen in <b>ABC-Reihenfolge</b>: E (Ethyl) vor M (Methyl).</li>
+      <li>Insgesamt hat das Molekül 9 + 2 + 1 = <b>12 C-Atome</b>.</li>
+    </ul>
+    <div id="beispielBild" style="text-align:center"></div>
+  </div>
+  <div class="box">
+    <b>Dein 5-Schritte-Plan:</b>
+    <ul>
+      <li><b>Schritt 1 – Längste Kette suchen:</b> Sie ergibt den Grundnamen (z. B. Nonan).</li>
+      <li><b>Schritt 2 – Nummerieren:</b> Beginne an dem Ende, bei dem die Zweige die <b>kleinstmöglichen Nummern</b> bekommen.</li>
+      <li><b>Schritt 3 – Zweige benennen:</b> 1 C = Methyl, 2 C = Ethyl, 3 C = Propyl.</li>
+      <li><b>Schritt 4 – Gleiche Zweige zählen:</b> 2 gleiche = <b>di</b>, 3 gleiche = <b>tri</b> (z. B. 2,3-Dimethylbutan).</li>
+      <li><b>Schritt 5 – Alphabetisch ordnen:</b> Ethyl vor Methyl vor Propyl. Die Vorsilben di und tri zählen dabei nicht.</li>
+    </ul>
+  </div>
+
+  <h2>4. Isomere und Eigenschaften (EF-Wissen)</h2>
+  <div class="box">
+    <b>Konstitutionsisomere</b> haben die gleiche Summenformel, aber eine andere Struktur.
+    <ul>
+      <li>Butan (C₄H₁₀) hat <b>2</b> Isomere: Butan und 2-Methylpropan.</li>
+      <li>Pentan (C₅H₁₂) hat <b>3</b> Isomere: Pentan, 2-Methylbutan und 2,2-Dimethylpropan.</li>
+      <li>Hexan (C₆H₁₄) hat <b>5</b> Isomere.</li>
+    </ul>
+  </div>
+  <div class="box">
+    <b>Eigenschaften:</b>
+    <ul>
+      <li>Alkane sind <b>unpolar</b>. Sie lösen sich nicht in Wasser, aber gut in unpolaren Stoffen wie Benzin.</li>
+      <li>Zwischen den Molekülen wirken <b>Van-der-Waals-Kräfte</b>. Je länger die Kette, desto größer die Oberfläche, desto stärker die Kräfte und desto <b>höher die Siedetemperatur</b>.</li>
+      <li><b>Verzweigte</b> Isomere haben eine kleinere Kontaktfläche und deshalb meist <b>niedrigere</b> Siedetemperaturen.</li>
+      <li><b>Verbrennung (vollständig):</b> Alkan + O₂ → CO₂ + H₂O</li>
+      <li><b>Radikalische Substitution:</b> CH₄ + Cl₂ → CH₃Cl + HCl (mit Licht). Ein H-Atom wird durch ein Cl-Atom ersetzt.</li>
+    </ul>
+  </div>
+  <button class="btn gelb" onclick="zeige('quiz')">Bereit? Weiter zum Quiz 🎮</button>
+</section>
+
+<!-- ===================== QUIZ ===================== -->
+<section class="seite" id="quiz" hidden>
+  <h2>🎮 Quiz-Arena</h2>
+  <p>10 Fragen, <b>3 Leben</b> ❤️❤️❤️. Mit einer Serie richtiger Antworten gibt es Bonus-XP.</p>
+  <div id="quizBox"></div>
+</section>
+
+<!-- ===================== ZEICHNEN ===================== -->
+<section class="seite" id="zeichnen" hidden>
+  <h2>✏️ Zeichen-Studio</h2>
+  <div class="box">
+    <b>Aufgabe:</b> <span id="zAufgabe"></span><br>
+    <span class="klein">Jeder Knick und jedes Ende ist ein C-Atom. Zeichne die Hauptkette als Zickzack in <b>Blau</b>. Dazu kommen die Zweige: Methyl = 🟢, Ethyl = 🟠, Propyl = 🟣. Ein Methyl-Zweig ist ein Strich, ein Ethyl-Zweig zwei, ein Propyl-Zweig drei.</span>
+    <div class="werkzeug">
+      <div class="farbe aktiv" data-f="#2563eb" style="background:#2563eb" title="Hauptkette"></div>
+      <div class="farbe" data-f="#16a34a" style="background:#16a34a" title="Methyl"></div>
+      <div class="farbe" data-f="#f97316" style="background:#f97316" title="Ethyl"></div>
+      <div class="farbe" data-f="#c026d3" style="background:#c026d3" title="Propyl"></div>
+      <button class="btn" id="bStift">✏️ Stift</button>
+      <button class="btn" id="bRadierer">🧽 Radierer</button>
+      <button class="btn" id="bLoeschen">🗑️ Löschen</button>
+    </div>
+    <canvas id="zeichenfeld" width="600" height="320"></canvas>
+    <p>Striche gemalt: <b id="strichZahl">0</b></p>
+    <button class="btn gelb" id="bPruefen">🤖 Prüfen</button>
+    <button class="btn" id="bLoesung">👀 Lösung</button>
+    <button class="btn" id="bNeuZ">🎲 Neue Aufgabe</button>
+    <div class="fb" id="zFb"></div>
+    <div id="zLoesung"></div>
+    <p class="klein">Hinweis: Die Prüfung schaut nur auf Farben und ungefähre Längen. Du darfst größer, kleiner oder gedreht zeichnen.</p>
+  </div>
+</section>
+
+<!-- ===================== BENENNEN ===================== -->
+<section class="seite" id="benennen" hidden>
+  <h2>⌨️ Namen-Challenge</h2>
+  <div class="box">
+    <p>Wie heißt dieses Molekül? <b>Blau</b> = Hauptkette, 🟢 Methyl, 🟠 Ethyl, 🟣 Propyl. Die Zahlen zeigen die Nummerierung.</p>
+    <div id="nBild" style="text-align:center"></div><br>
+    <input type="text" id="nEingabe" placeholder="z. B. 3-Methylhexan" autocapitalize="none" autocomplete="off" autocorrect="off">
+    <p class="klein">Schreibe mit Bindestrichen und Kommas, z. B. <i>2,3-Dimethylbutan</i> oder <i>3-Ethyl-2-methylpentan</i>.</p>
+    <button class="btn gelb" id="nCheck">✅ Prüfen</button>
+    <button class="btn" id="nLoesung">💡 Lösung</button>
+    <button class="btn" id="nNeu">🎲 Nächste</button>
+    <div class="fb" id="nFb"></div>
+  </div>
+</section>
+
+<!-- ===================== MEMORY ===================== -->
+<section class="seite" id="memory" hidden>
+  <h2>🃏 Memory: Name ↔ Formel</h2>
+  <p>Finde die Paare! Zu jedem Alkan gehört sein Name und seine Summenformel. Züge: <b id="memZuege">0</b></p>
+  <div class="memGrid" id="memGrid"></div>
+  <div class="fb" id="memFb"></div>
+  <button class="btn" onclick="memStart()">🔄 Neu mischen</button>
+</section>
+
+<p style="text-align:center"><button class="btn" id="bReset" style="background:#888">Fortschritt zurücksetzen</button></p>
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ================= GRUNDDATEN =================
+const $ = id => document.getElementById(id);
+const NAMEN = ["Methan","Ethan","Propan","Butan","Pentan","Hexan","Heptan","Octan","Nonan","Decan"];
+const SDP   = [-162,-89,-42,-1,36,69,98,126,151,174];
+const SUB   = "₀₁₂₃₄₅₆₇₈₉";
+const tief  = n => String(n).split("").map(c => SUB[c]).join("");
+const formel = n => "C" + (n > 1 ? tief(n) : "") + "H" + tief(2*n + 2);
+const RN = ["","Methyl","Ethyl","Propyl"];
+const RC = ["","#16a34a","#f97316","#c026d3"];
+const shuffle = a => { for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+
+// ================= XP & RÄNGE =================
+const RANG = [[0,"Alkan-Anfänger/in 🐣"],[50,"Molekül-Entdecker/in 🔍"],[150,"Chemie-Profi 🧪"],[300,"Alkan-Meister/in 👑"],[500,"Legende der Kohlenwasserstoffe 🏆"]];
+let xp = parseInt(localStorage.getItem("alkanXP")) || 0;
+function updXP() {
+  let aktuell = 0;
+  RANG.forEach((r,i) => { if (xp >= r[0]) aktuell = i; });
+  const next = RANG[aktuell+1];
+  $("rang").textContent = "⭐ " + xp + " XP – " + RANG[aktuell][1] + (next ? "  (nächster Rang bei " + next[0] + " XP)" : "");
+  const von = RANG[aktuell][0], bis = next ? next[0] : von + 1;
+  $("balkenFuell").style.width = next ? Math.min(100, (xp-von)/(bis-von)*100) + "%" : "100%";
+}
+function toast(t) {
+  const el = $("toast"); el.textContent = t; el.classList.add("an");
+  setTimeout(() => el.classList.remove("an"), 1600);
+}
+function addXP(n) {
+  xp += n; localStorage.setItem("alkanXP", xp); updXP(); toast("+" + n + " XP ⭐");
+}
+$("bReset").onclick = () => {
+  if (confirm("Willst du deinen Fortschritt wirklich löschen?")) { xp = 0; localStorage.removeItem("alkanXP"); updXP(); }
+};
+
+// ================= NAVIGATION =================
+function zeige(id) {
+  document.querySelectorAll(".seite").forEach(s => s.hidden = (s.id !== id));
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("aktiv", b.dataset.s === id));
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => zeige(b.dataset.s));
+
+// ================= STRUKTUR-ZEICHNUNG (SVG) =================
+// Hauptkette: Zickzack, C1 unten. zweige: [{pos, l}] mit l = Anzahl C im Zweig
+function struct(haupt, zweige, nummern) {
+  const sx = 60, ox = 40, O = 140, U = 190, W = 80 + (haupt-1)*sx;
+  const x = i => ox + (i-1)*sx, y = i => (i % 2 ? U : O);
+  let s = '<svg viewBox="0 0 ' + W + ' 330" style="width:100%;max-width:' + Math.max(W,280) + 'px;background:#fff;border-radius:12px;border:2px solid #1b5e8a">';
+  const pts = []; for (let i = 1; i <= haupt; i++) pts.push(x(i) + "," + y(i));
+  s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+  zweige.forEach(z => {
+    const r = (y(z.pos) === O) ? -1 : 1;
+    const p = [x(z.pos) + "," + y(z.pos)];
+    for (let k = 1; k <= z.l; k++) p.push(x(z.pos) + "," + (y(z.pos) + r*40*k));
+    s += '<polyline points="' + p.join(" ") + '" fill="none" stroke="' + RC[z.l] + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
+    if (nummern) s += '<text x="' + (x(z.pos)+10) + '" y="' + (y(z.pos) + r*40*z.l + 5) + '" fill="' + RC[z.l] + '" font-size="14" font-weight="bold">' + RN[z.l] + '</text>';
+  });
+  if (nummern) for (let i = 1; i <= haupt; i++) {
+    s += '<text x="' + (x(i)-18) + '" y="' + (y(i) + (y(i) === O ? -6 : 22)) + '" fill="#2563eb" font-size="15" font-weight="bold">' + i + '</text>';
+  }
+  return s + '</svg>';
+}
+
+// ================= MOLEKÜL-AUFGABEN =================
+const MOL = [
+  { name:"2-Methylbutan",          haupt:4, zweige:[{pos:2,l:1}] },
+  { name:"2-Methylpentan",         haupt:5, zweige:[{pos:2,l:1}] },
+  { name:"3-Methylpentan",         haupt:5, zweige:[{pos:3,l:1}] },
+  { name:"3-Methylhexan",          haupt:6, zweige:[{pos:3,l:1}] },
+  { name:"3-Ethylhexan",           haupt:6, zweige:[{pos:3,l:2}] },
+  { name:"4-Propylheptan",         haupt:7, zweige:[{pos:4,l:3}] },
+  { name:"2,3-Dimethylbutan",      haupt:4, zweige:[{pos:2,l:1},{pos:3,l:1}] },
+  { name:"2,4-Dimethylhexan",      haupt:6, zweige:[{pos:2,l:1},{pos:4,l:1}] },
+  { name:"3,4-Dimethylhexan",      haupt:6, zweige:[{pos:3,l:1},{pos:4,l:1}] },
+  { name:"3-Ethyl-2-methylpentan", haupt:5, zweige:[{pos:2,l:1},{pos:3,l:2}] },
+  { name:"4-Ethyl-6-methylnonan",  haupt:9, zweige:[{pos:4,l:2},{pos:6,l:1}] }
+];
+
+// ================= LERNEN: Tabelle & Bilder =================
+(function lernenAufbauen() {
+  let t = "<tr><th>C-Atome</th><th>Name</th><th>Formel</th><th>Siedetemp.</th></tr>";
+  NAMEN.forEach((n,i) => t += "<tr><td>" + (i+1) + "</td><td><b>" + n + "</b></td><td>" + formel(i+1) + "</td><td>" + SDP[i] + " °C</td></tr>");
+  $("tabelle").innerHTML = t;
+  const farbe = ["","#16a34a","#f97316","#c026d3"];
+  const emoji = ["","🌱 ganz kurz","🌿 mittel","🌳 länger"];
+  let k = "";
+  for (let l = 1; l <= 3; l++) {
+    k += '<div class="karte"><h3 style="color:' + farbe[l] + '">' + RN[l] + ' = ' + l + ' C</h3>' +
+         struct(5, [{pos:3,l:l}], false) + '<p>' + emoji[l] + '</p></div>';
+  }
+  $("kartenReste").innerHTML = k;
+  $("beispielBild").innerHTML = struct(9, [{pos:4,l:2},{pos:6,l:1}], true);
+})();
+
+// ================= QUIZ =================
+// r = richtige Antwort, w = falsche Antworten, h = Erklärung
+const FRAGEN = [
+  { f:"Wie lautet die allgemeine Formel der Alkane?", r:"CₙH₂ₙ₊₂", w:["CₙH₂ₙ","CₙH₂ₙ₋₂"], h:"Bei n C-Atomen gibt es 2n + 2 H-Atome." },
+  { f:"Wie viele H-Atome hat ein Alkan mit 9 C-Atomen?", r:"20", w:["18","19"], h:"2·9 + 2 = 20 (Nonan: C₉H₂₀)." },
+  { f:"Wie heißt das Alkan mit 6 C-Atomen?", r:"Hexan", w:["Heptan","Pentan"], h:"Hexa = 6." },
+  { f:"Welche Summenformel hat Butan?", r:"C₄H₁₀", w:["C₄H₈","C₅H₁₀"], h:"4 C → 2·4 + 2 = 10 H." },
+  { f:"Ein Zweig hat 2 C-Atome. Wie heißt er?", r:"Ethyl", w:["Methyl","Propyl"], h:"Ethan hat 2 C → Ethyl." },
+  { f:"Ein Zweig hat 3 C-Atome. Wie heißt er?", r:"Propyl", w:["Ethyl","Methyl"], h:"Propan hat 3 C → Propyl." },
+  { f:"Wie lang ist die Hauptkette bei 4-Ethyl-6-methylnonan?", r:"9 C-Atome", w:["6 C-Atome","12 C-Atome"], h:"nonan = 9. Die 12 sind alle C-Atome zusammen." },
+  { f:"Wie viele C-Atome hat 4-Ethyl-6-methylnonan insgesamt?", r:"12", w:["9","11"], h:"9 + 2 (Ethyl) + 1 (Methyl) = 12." },
+  { f:"Welcher Name ist richtig geordnet?", r:"3-Ethyl-2-methylpentan", w:["2-Methyl-3-ethylpentan","3-Methyl-2-ethylpentan"], h:"Alphabetisch: E vor M." },
+  { f:"Wie viele C-Atome hat 2,3-Dimethylbutan insgesamt?", r:"6", w:["4","5"], h:"Butan = 4 C, plus 2 Methyl-Zweige = 6." },
+  { f:"Was bedeutet „di“ in Dimethyl?", r:"zwei gleiche Zweige", w:["zwei C-Atome in der Kette","eine Doppelbindung"], h:"di = 2, tri = 3 gleiche Zweige." },
+  { f:"Wie wird die Hauptkette nummeriert?", r:"So, dass die Zweige die kleinstmöglichen Nummern bekommen", w:["Immer von links nach rechts","So, dass die größte Nummer vorne steht"], h:"Das ist Schritt 2 im 5-Schritte-Plan." },
+  { f:"Warum steigt die Siedetemperatur mit der Kettenlänge?", r:"Die Van-der-Waals-Kräfte werden stärker", w:["Es entstehen Wasserstoffbrücken","Es entstehen Ionenbindungen"], h:"Mehr Oberfläche → stärkere Van-der-Waals-Kräfte." },
+  { f:"Welcher Stoff siedet höher?", r:"Pentan", w:["2,2-Dimethylpropan","Beide gleich"], h:"Verzweigte Moleküle haben weniger Kontaktfläche → niedrigere Siedetemperatur." },
+  { f:"Wie viele Konstitutionsisomere hat Butan?", r:"2", w:["1","3"], h:"Butan und 2-Methylpropan." },
+  { f:"Wie viele Konstitutionsisomere hat Pentan?", r:"3", w:["2","5"], h:"Pentan, 2-Methylbutan, 2,2-Dimethylpropan." },
+  { f:"Lösen sich Alkane in Wasser?", r:"Nein, sie sind unpolar", w:["Ja, sie bilden Wasserstoffbrücken","Ja, aber nur Methan"], h:"Unpolares löst sich in Unpolarem, nicht in Wasser." },
+  { f:"Wie nennt man die Reaktion von Methan mit Chlor bei Licht?", r:"Radikalische Substitution", w:["Addition","Elimination"], h:"Ein H-Atom wird durch ein Cl-Atom ersetzt." },
+  { f:"Was entsteht bei der vollständigen Verbrennung von Alkanen?", r:"CO₂ und H₂O", w:["CO und H₂","C und H₂O"], h:"Alkan + Sauerstoff → Kohlenstoffdioxid + Wasser." },
+  { f:"Wodurch unterscheiden sich benachbarte Glieder der homologen Reihe?", r:"Durch eine CH₂-Gruppe", w:["Durch eine OH-Gruppe","Durch ein einzelnes C-Atom ohne H"], h:"Methan → Ethan: +CH₂." },
+  { f:"Welche Bindungen gibt es in Alkanen?", r:"Nur C–C- und C–H-Einfachbindungen", w:["Auch C=C-Doppelbindungen","Auch C≡C-Dreifachbindungen"], h:"Alkane sind gesättigt." }
+];
+let qListe, qi, leben, serie, qPunkte;
+
+function quizStart() {
+  qListe = shuffle(FRAGEN.slice()).slice(0, 10);
+  qi = 0; leben = 3; serie = 0; qPunkte = 0;
+  quizFrage();
+}
+function quizFrage() {
+  const box = $("quizBox");
+  if (leben <= 0 || qi >= qListe.length) { quizEnde(); return; }
+  const q = qListe[qi];
+  const optionen = shuffle([q.r].concat(q.w));
+  box.innerHTML = '<div class="box"><b>Frage ' + (qi+1) + ' / ' + qListe.length + '</b> &nbsp; ' +
+    '❤️'.repeat(leben) + '🖤'.repeat(3-leben) + ' &nbsp; 🔥 Serie: ' + serie +
+    '<h3>' + q.f + '</h3><div id="optBox"></div><div class="fb" id="qFb"></div><div id="qWeiter"></div></div>';
+  optionen.forEach(text => {
+    const b = document.createElement("button");
+    b.className = "btn opt"; b.textContent = text;
+    b.onclick = () => quizAntwort(b, text, q);
+    $("optBox").appendChild(b);
+  });
+}
+function quizAntwort(btn, text, q) {
+  document.querySelectorAll("#optBox .btn").forEach(b => {
+    b.disabled = true;
+    if (b.textContent === q.r) b.classList.add("ok");
+  });
+  const fb = $("qFb");
+  if (text === q.r) {
+    serie++; qPunkte++;
+    const bonus = Math.min(serie - 1, 5);
+    addXP(10 + bonus);
+    fb.className = "fb gut"; fb.textContent = "🎉 Richtig! " + q.h;
+  } else {
+    btn.classList.add("nein"); serie = 0; leben--;
+    fb.className = "fb schlecht"; fb.textContent = "😅 Nicht ganz. " + q.h;
+  }
+  qi++;
+  const w = document.createElement("button");
+  w.className = "btn gelb"; w.textContent = "Weiter ➡️";
+  w.onclick = quizFrage;
+  $("qWeiter").appendChild(w);
+}
+function quizEnde() {
+  const geschafft = leben > 0;
+  if (geschafft && qPunkte === qListe.length) addXP(30);
+  $("quizBox").innerHTML = '<div class="box"><h3>' + (geschafft ? "🏁 Geschafft!" : "💥 Keine Leben mehr!") + '</h3>' +
+    '<p>Du hast <b>' + qPunkte + ' von ' + qListe.length + '</b> richtig.' +
+    (geschafft && qPunkte === qListe.length ? " Perfekt! Bonus: +30 XP 🌟" : "") + '</p>' +
+    '<button class="btn gelb" onclick="quizStart()">🔄 Nochmal spielen</button></div>';
+}
+quizStart();
+
+// ================= ZEICHNEN =================
+const canvas = $("zeichenfeld"), ctx = canvas.getContext("2d");
+let farbe = "#2563eb", radiere = false, malt = false, letzte = null, striche = 0;
+let zAkt = null, zXPgeholt = false;
+ctx.lineCap = "round"; ctx.lineJoin = "round";
+
+function pos(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x:(e.clientX - r.left)*(canvas.width/r.width), y:(e.clientY - r.top)*(canvas.height/r.height) };
+}
+function linie(a, b) {
+  ctx.strokeStyle = radiere ? "#ffffff" : farbe;
+  ctx.lineWidth = radiere ? 25 : 5;
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+}
+canvas.addEventListener("pointerdown", e => {
+  malt = true; letzte = pos(e); canvas.setPointerCapture(e.pointerId);
+  linie(letzte, letzte);
+  if (!radiere) { striche++; $("strichZahl").textContent = striche; }
+});
+canvas.addEventListener("pointermove", e => {
+  if (!malt) return;
+  const p = pos(e); linie(letzte, p); letzte = p;
+});
+["pointerup","pointercancel"].forEach(ev => canvas.addEventListener(ev, () => malt = false));
+
+function werkzeug(rad) {
+  radiere = rad;
+  $("bStift").classList.toggle("gelb", !rad);
+  $("bRadierer").classList.toggle("gelb", rad);
+}
+$("bStift").onclick = () => werkzeug(false);
+$("bRadierer").onclick = () => werkzeug(true);
+werkzeug(false);
+document.querySelectorAll(".farbe").forEach(f => f.onclick = () => {
+  document.querySelectorAll(".farbe").forEach(x => x.classList.remove("aktiv"));
+  f.classList.add("aktiv"); farbe = f.dataset.f; werkzeug(false);
+});
+function feldLeeren() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  striche = 0; $("strichZahl").textContent = 0;
+  $("zFb").textContent = ""; $("zLoesung").innerHTML = "";
+}
+$("bLoeschen").onclick = feldLeeren;
+
+function neueZeichenAufgabe() {
+  let neu; do { neu = MOL[Math.floor(Math.random()*MOL.length)]; } while (neu === zAkt && MOL.length > 1);
+  zAkt = neu; zXPgeholt = false;
+  $("zAufgabe").innerHTML = "Zeichne <b>" + zAkt.name + "</b>";
+  feldLeeren();
+}
+$("bNeuZ").onclick = neueZeichenAufgabe;
+$("bLoesung").onclick = () => {
+  $("zLoesung").innerHTML = "<p><b>So kann die Lösung aussehen</b> (deine darf anders gedreht sein):</p>" + struct(zAkt.haupt, zAkt.zweige, true);
+};
+
+// Pixel pro Farbe zählen
+const FARBEN = ["#2563eb","#16a34a","#f97316","#c026d3"];
+const FNAME = {"#2563eb":"Hauptkette (blau)","#16a34a":"Methyl (grün)","#f97316":"Ethyl (orange)","#c026d3":"Propyl (lila)"};
+const rgb = h => [1,3,5].map(i => parseInt(h.substr(i,2),16));
+function pixelZaehlen() {
+  const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  const z = {}, cols = FARBEN.map(rgb);
+  FARBEN.forEach(f => z[f] = 0);
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i+3] < 200) continue;
+    for (let k = 0; k < cols.length; k++) {
+      const diff = Math.abs(d[i]-cols[k][0]) + Math.abs(d[i+1]-cols[k][1]) + Math.abs(d[i+2]-cols[k][2]);
+      if (diff < 60) { z[FARBEN[k]]++; break; }
+    }
+  }
+  return z;
+}
+$("bPruefen").onclick = () => {
+  const fb = $("zFb"), px = pixelZaehlen(), haupt = "#2563eb";
+  fb.className = "fb schlecht";
+  if (px[haupt] < 300) { fb.textContent = "🔵 Zeichne zuerst die Hauptkette in Blau (Zickzack)!"; return; }
+  if (striche < 1 + zAkt.zweige.length) {
+    fb.textContent = "✏️ Noch zu wenige Striche. Du brauchst die Hauptkette und " + zAkt.zweige.length + " Zweig(e)."; return;
+  }
+  const erwartet = {};
+  zAkt.zweige.forEach(z => { const c = RC[z.l]; erwartet[c] = (erwartet[c] || 0) + z.l; });
+  const proEinheit = px[haupt] / (zAkt.haupt - 1);
+  const m = []; let ok = true;
+  Object.keys(erwartet).forEach(hex => {
+    const soll = erwartet[hex] * proEinheit, v = px[hex] / soll;
+    if (px[hex] < 0.15*soll)  { m.push("❌ " + FNAME[hex] + " fehlt noch."); ok = false; }
+    else if (v < 0.5)         { m.push("📏 " + FNAME[hex] + " ist zu kurz."); ok = false; }
+    else if (v > 1.9)         { m.push("📏 " + FNAME[hex] + " ist zu lang."); ok = false; }
+    else                      { m.push("✅ " + FNAME[hex] + " passt!"); }
+  });
+  FARBEN.forEach(f => {
+    if (f !== haupt && !(f in erwartet) && px[f] > 0.2*px[haupt]) { m.push("🤔 " + FNAME[f] + " brauchst du hier nicht."); ok = false; }
+  });
+  if (ok) {
+    fb.className = "fb gut";
+    fb.innerHTML = "🎉 Super! Das sieht nach <b>" + zAkt.name + "</b> aus.<br>" + m.join("<br>");
+    if (!zXPgeholt) { zXPgeholt = true; addXP(20); }
+  } else {
+    fb.innerHTML = m.join("<br>") + "<br>Tipp: Schau dir die Lösung an. 👀";
+  }
+};
+neueZeichenAufgabe();
+
+// ================= BENENNEN =================
+let nAkt = null, nVersuche = 0, nGeloest = false;
+const norm = s => s.toLowerCase().replace(/\s+/g, "").replace(/[–—]/g, "-");
+const nurBuchst = s => s.replace(/[^a-z0-9]/g, "");
+
+function neueNameAufgabe() {
+  let neu; do { neu = MOL[Math.floor(Math.random()*MOL.length)]; } while (neu === nAkt && MOL.length > 1);
+  nAkt = neu; nVersuche = 0; nGeloest = false;
+  $("nBild").innerHTML = struct(nAkt.haupt, nAkt.zweige, true);
+  $("nEingabe").value = ""; $("nFb").textContent = "";
+}
+$("nNeu").onclick = neueNameAufgabe;
+$("nLoesung").onclick = () => {
+  nGeloest = true; $("nFb").className = "fb schlecht";
+  $("nFb").textContent = "Lösung: " + nAkt.name;
+};
+$("nCheck").onclick = () => {
+  if (nGeloest) return;
+  const soll = norm(nAkt.name), ein = norm($("nEingabe").value), fb = $("nFb");
+  nVersuche++;
+  if (ein === soll) {
+    nGeloest = true; fb.className = "fb gut";
+    fb.textContent = "🎉 Richtig! " + nAkt.name;
+    addXP(nVersuche === 1 ? 15 : 5);
+    return;
+  }
+  fb.className = "fb schlecht";
+  const grund = NAMEN[nAkt.haupt - 1].toLowerCase();
+  if (nurBuchst(ein) === nurBuchst(soll)) {
+    fb.textContent = "😮 Fast! Die Buchstaben stimmen, aber achte auf Bindestriche und Kommas.";
+  } else if (!ein.endsWith(grund)) {
+    fb.textContent = "😅 Zähle die blaue Hauptkette. Wie viele C-Atome hat sie? Danach richtet sich die Endung.";
+  } else if (!/\d/.test(ein)) {
+    fb.textContent = "😅 Es fehlt die Nummer, an der der Zweig hängt.";
+  } else {
+    fb.textContent = "😅 Fast! Prüfe die Nummern, die Länge der Zweige (1 C = Methyl, 2 C = Ethyl, 3 C = Propyl) und die ABC-Reihenfolge.";
+  }
+};
+$("nEingabe").addEventListener("keydown", e => { if (e.key === "Enter") $("nCheck").click(); });
+neueNameAufgabe();
+
+// ================= MEMORY =================
+let memOffen = [], memZuege = 0, memFertig = 0, memSperre = false;
+function memStart() {
+  const ids = shuffle([...Array(10).keys()]).slice(0, 6);
+  const karten = [];
+  ids.forEach(i => { karten.push({id:i, t:NAMEN[i]}); karten.push({id:i, t:formel(i+1)}); });
+  shuffle(karten);
+  memOffen = []; memZuege = 0; memFertig = 0; memSperre = false;
+  $("memZuege").textContent = 0; $("memFb").textContent = "";
+  const grid = $("memGrid"); grid.innerHTML = "";
+  karten.forEach(k => {
+    const b = document.createElement("button");
+    b.className = "mem"; b.textContent = "❓";
+    b.onclick = () => memKlick(b, k);
+    grid.appendChild(b);
+  });
+}
+function memKlick(b, k) {
+  if (memSperre || b.classList.contains("offen") || b.classList.contains("fertig")) return;
+  b.classList.add("offen"); b.textContent = k.t;
+  memOffen.push({b, k});
+  if (memOffen.length === 2) {
+    memZuege++; $("memZuege").textContent = memZuege;
+    const [a, c] = memOffen;
+    if (a.k.id === c.k.id) {
+      [a, c].forEach(o => { o.b.classList.remove("offen"); o.b.classList.add("fertig"); });
+      memOffen = []; memFertig++;
+      if (memFertig === 6) {
+        const bonus = Math.max(10, 50 - (memZuege - 6)*4);
+        $("memFb").className = "fb gut";
+        $("memFb").textContent = "🏆 Geschafft in " + memZuege + " Zügen!";
+        addXP(bonus);
+      }
+    } else {
+      memSperre = true;
+      setTimeout(() => {
+        [a, c].forEach(o => { o.b.classList.remove("offen"); o.b.textContent = "❓"; });
+        memOffen = []; memSperre = false;
+      }, 900);
+    }
+  }
+}
+memStart();
+
+updXP();
+zeige("lernen");
+</script>
+</body>
+</html>
