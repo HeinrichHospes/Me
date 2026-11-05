@@ -6,7 +6,7 @@
 <title>Alkane-Abenteuer (EF)</title>
 <style>
   *{box-sizing:border-box}
-  body{font-family:Arial,sans-serif;margin:0;background:#eef7ff;color:#222;padding-bottom:30px}
+  body{font-family:Arial,sans-serif;margin:0;background:#eef7ff;color:#222;padding-bottom:120px}
   header{background:#1b5e8a;color:#fff;padding:12px 16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0004}
   header h1{margin:0;font-size:1.3em}
   #rang{font-size:.95em;margin-top:4px}
@@ -20,15 +20,17 @@
   h2{color:#1b5e8a;border-bottom:3px dashed #1b5e8a;padding-bottom:4px}
   .box{background:#fff;border-left:6px solid #1b5e8a;padding:12px 16px;margin:14px 0;border-radius:8px}
   .merk{background:#fff3c4;border-left-color:#f5a800}
+  .spass{background:#ffe6f2;border-left-color:#e91e8c}
   table{border-collapse:collapse;width:100%;background:#fff;font-size:.95em}
   th,td{border:1px solid #bcd;padding:6px;text-align:center}
   th{background:#1b5e8a;color:#fff}
   tr:hover td{background:#fff3c4}
   .karten{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-  .karte{background:#fff;border-radius:12px;padding:10px;width:250px;text-align:center;box-shadow:0 2px 6px #0003}
-  .btn{padding:9px 16px;border:none;border-radius:20px;background:#1b5e8a;color:#fff;cursor:pointer;font-size:15px;margin:3px}
-  .btn:hover{background:#144a6f}
+  .karte{background:#fff;border-radius:12px;padding:10px;width:270px;text-align:center;box-shadow:0 2px 6px #0003}
+  .btn{padding:9px 16px;border:none;border-radius:20px;background:#1b5e8a;color:#fff;cursor:pointer;font-size:15px;margin:3px;transition:transform .1s}
+  .btn:hover{background:#144a6f;transform:scale(1.05)}
   .btn.gelb{background:#f5a800;color:#000}
+  .btn.pink{background:#e91e8c}
   .btn:disabled{cursor:default;opacity:.9}
   .btn.ok{background:#2e9e44}.btn.nein{background:#d33}
   .opt{display:block;width:100%;text-align:left;margin:8px 0;border-radius:10px}
@@ -44,9 +46,25 @@
   .mem{height:70px;border:none;border-radius:10px;background:#1b5e8a;color:#fff;font-size:15px;cursor:pointer}
   .mem.offen{background:#fff;color:#000;border:3px solid #f5a800}
   .mem.fertig{background:#2e9e44;color:#fff}
-  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20}
+  #toast{position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:20px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:30}
   #toast.an{opacity:1}
   .klein{font-size:.85em;color:#555}
+  .witz{font-size:1.15em;min-height:3em}
+
+  /* Maskottchen Molli */
+  #molli{position:fixed;left:8px;bottom:8px;z-index:25;display:flex;align-items:flex-end;gap:6px;max-width:calc(100% - 16px);pointer-events:none}
+  #molliFigur{pointer-events:auto;cursor:pointer;font-size:52px;line-height:1;animation:huepf 2.2s infinite ease-in-out;
+    background:#fff;border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px #0005;border:3px solid #1b5e8a;flex:none}
+  #molliText{background:#fff;border:3px solid #1b5e8a;border-radius:16px;padding:8px 12px;font-size:14px;max-width:260px;box-shadow:0 3px 10px #0004;
+    opacity:0;transform:scale(.8);transition:all .25s;transform-origin:left bottom}
+  #molliText.an{opacity:1;transform:scale(1)}
+  @keyframes huepf{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes wackel{0%,100%{transform:rotate(0)}25%{transform:rotate(-15deg)}75%{transform:rotate(15deg)}}
+  #molliFigur.wackel{animation:wackel .4s 2}
+
+  /* Konfetti */
+  .konf{position:fixed;top:-20px;width:10px;height:14px;z-index:40;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
 </style>
 </head>
 <body>
@@ -61,6 +79,7 @@
     <button data-s="zeichnen">✏️ Zeichnen</button>
     <button data-s="benennen">⌨️ Benennen</button>
     <button data-s="memory">🃏 Memory</button>
+    <button data-s="spass">😂 Spaß</button>
   </nav>
 </header>
 
@@ -70,21 +89,21 @@
 <section class="seite" id="lernen">
   <h2>1. Die homologe Reihe der Alkane</h2>
   <div class="box">
-    Alkane bestehen nur aus <b>Kohlenstoff (C)</b> und <b>Wasserstoff (H)</b> und haben nur <b>Einfachbindungen</b> (gesättigte Kohlenwasserstoffe).<br>
+    Alkane bestehen nur aus <b>Kohlenstoff (C)</b> und <b>Wasserstoff (H)</b> und haben nur <b>Einfachbindungen</b>. Also keine Beziehungsdramen mit Doppelbindungen 😄<br>
     <b>Allgemeine Formel:</b> C<sub>n</sub>H<sub>2n+2</sub><br>
-    <b>Homologe Reihe:</b> Benachbarte Glieder unterscheiden sich immer um eine <b>CH₂-Gruppe</b>.
+    <b>Homologe Reihe:</b> Benachbarte Glieder unterscheiden sich immer um eine <b>CH₂-Gruppe</b>. Jedes Glied bekommt ein Stück Kette dazu, wie ein Zug mit immer einem Waggon mehr 🚂.
   </div>
   <table id="tabelle"></table>
-  <p class="klein">Siedetemperaturen bei Normaldruck, gerundet.</p>
   <div class="box merk">
-    💡 <b>Eselsbrücke:</b> <b>M</b>ein <b>E</b>sel <b>P</b>upst <b>B</b>unt → <b>M</b>ethan, <b>E</b>than, <b>P</b>ropan, <b>B</b>utan.<br>
-    Ab 5 C-Atomen kommen griechische Zahlen: Penta (5), Hexa (6), Hepta (7), Okta (8 🐙), Nona (9), Deca (10).
+    💡 <b>Eselsbrücke:</b> <b>M</b>ein <b>E</b>sel <b>P</b>upst <b>B</b>unt → <b>M</b>ethan, <b>E</b>than, <b>P</b>ropan, <b>B</b>utan 🫏💨<br>
+    Ab 5 C-Atomen kommen griechische Zahlen: Penta (5), Hexa (6), Hepta (7), Okta (8, wie die 8 Arme beim Oktopus 🐙), Nona (9), Deca (10).
   </div>
 
   <h2>2. Methyl, Ethyl oder Propyl?</h2>
   <div class="box">
     Eine <b>Seitenkette</b> (Alkyl-Rest) ist ein Zweig an der Hauptkette. Der Name hängt von der <b>Anzahl der C-Atome im Zweig</b> ab.<br>
-    <b>Trick:</b> Aus <b>-an</b> wird <b>-yl</b>: Methan → <b>Methyl</b>, Ethan → <b>Ethyl</b>, Propan → <b>Propyl</b>.
+    <b>Trick:</b> Aus <b>-an</b> wird <b>-yl</b>: Methan → <b>Methyl</b>, Ethan → <b>Ethyl</b>, Propan → <b>Propyl</b>.<br>
+    <b>So zeichnest du es:</b> Jeder Knick und jedes Ende ist ein C-Atom (Punkt). Der Zweig geht im Zickzack von der Hauptkette weg.
   </div>
   <div class="karten" id="kartenReste"></div>
   <div class="box merk">💡 <b>Merkhilfe:</b> 1 C → <b>M</b>ini = <b>M</b>ethyl | 2 C → <b>E</b>twas länger = <b>E</b>thyl | 3 C → <b>P</b>lus noch eins = <b>P</b>ropyl</div>
@@ -102,6 +121,15 @@
     <div id="beispielBild" style="text-align:center"></div>
   </div>
   <div class="box">
+    <b>Beispiel mit Propyl: 4-Propylheptan</b>
+    <ul>
+      <li><b>heptan</b> → Hauptkette mit <b>7</b> C-Atomen</li>
+      <li><b>4-Propyl</b> → an C4 hängt ein Zweig mit <b>3</b> C-Atomen</li>
+      <li>Insgesamt: 7 + 3 = <b>10 C-Atome</b></li>
+    </ul>
+    <div id="beispielBild2" style="text-align:center"></div>
+  </div>
+  <div class="box">
     <b>Dein 5-Schritte-Plan:</b>
     <ul>
       <li><b>Schritt 1 – Längste Kette suchen:</b> Sie ergibt den Grundnamen (z. B. Nonan).</li>
@@ -112,23 +140,13 @@
     </ul>
   </div>
 
-  <h2>4. Isomere und Eigenschaften (EF-Wissen)</h2>
+  <h2>4. Isomere</h2>
   <div class="box">
-    <b>Konstitutionsisomere</b> haben die gleiche Summenformel, aber eine andere Struktur.
+    <b>Konstitutionsisomere</b> haben die gleiche Summenformel, aber eine andere Struktur. Gleiche Bausteine, anderes Bauwerk, wie bei Lego 🧱.
     <ul>
       <li>Butan (C₄H₁₀) hat <b>2</b> Isomere: Butan und 2-Methylpropan.</li>
       <li>Pentan (C₅H₁₂) hat <b>3</b> Isomere: Pentan, 2-Methylbutan und 2,2-Dimethylpropan.</li>
       <li>Hexan (C₆H₁₄) hat <b>5</b> Isomere.</li>
-    </ul>
-  </div>
-  <div class="box">
-    <b>Eigenschaften:</b>
-    <ul>
-      <li>Alkane sind <b>unpolar</b>. Sie lösen sich nicht in Wasser, aber gut in unpolaren Stoffen wie Benzin.</li>
-      <li>Zwischen den Molekülen wirken <b>Van-der-Waals-Kräfte</b>. Je länger die Kette, desto größer die Oberfläche, desto stärker die Kräfte und desto <b>höher die Siedetemperatur</b>.</li>
-      <li><b>Verzweigte</b> Isomere haben eine kleinere Kontaktfläche und deshalb meist <b>niedrigere</b> Siedetemperaturen.</li>
-      <li><b>Verbrennung (vollständig):</b> Alkan + O₂ → CO₂ + H₂O</li>
-      <li><b>Radikalische Substitution:</b> CH₄ + Cl₂ → CH₃Cl + HCl (mit Licht). Ein H-Atom wird durch ein Cl-Atom ersetzt.</li>
     </ul>
   </div>
   <button class="btn gelb" onclick="zeige('quiz')">Bereit? Weiter zum Quiz 🎮</button>
@@ -137,7 +155,7 @@
 <!-- ===================== QUIZ ===================== -->
 <section class="seite" id="quiz" hidden>
   <h2>🎮 Quiz-Arena</h2>
-  <p>10 Fragen, <b>3 Leben</b> ❤️❤️❤️. Mit einer Serie richtiger Antworten gibt es Bonus-XP.</p>
+  <p>10 Fragen, <b>3 Leben</b> ❤️❤️❤️. Mit einer Serie richtiger Antworten gibt es Bonus-XP. Molli schaut zu 👀</p>
   <div id="quizBox"></div>
 </section>
 
@@ -146,7 +164,7 @@
   <h2>✏️ Zeichen-Studio</h2>
   <div class="box">
     <b>Aufgabe:</b> <span id="zAufgabe"></span><br>
-    <span class="klein">Jeder Knick und jedes Ende ist ein C-Atom. Zeichne die Hauptkette als Zickzack in <b>Blau</b>. Dazu kommen die Zweige: Methyl = 🟢, Ethyl = 🟠, Propyl = 🟣. Ein Methyl-Zweig ist ein Strich, ein Ethyl-Zweig zwei, ein Propyl-Zweig drei.</span>
+    <span class="klein">Jeder Knick und jedes Ende ist ein C-Atom. Zeichne die Hauptkette als Zickzack in <b>Blau</b>. Die Zweige zeichnest du ebenfalls im Zickzack: Methyl = 🟢 (1 Strich), Ethyl = 🟠 (2 Striche), Propyl = 🟣 (3 Striche).</span>
     <div class="werkzeug">
       <div class="farbe aktiv" data-f="#2563eb" style="background:#2563eb" title="Hauptkette"></div>
       <div class="farbe" data-f="#16a34a" style="background:#16a34a" title="Methyl"></div>
@@ -171,7 +189,7 @@
 <section class="seite" id="benennen" hidden>
   <h2>⌨️ Namen-Challenge</h2>
   <div class="box">
-    <p>Wie heißt dieses Molekül? <b>Blau</b> = Hauptkette, 🟢 Methyl, 🟠 Ethyl, 🟣 Propyl. Die Zahlen zeigen die Nummerierung.</p>
+    <p>Wie heißt dieses Molekül? <b>Blau</b> = Hauptkette, 🟢 Methyl, 🟠 Ethyl, 🟣 Propyl. Die Zahlen zeigen die Nummerierung. <b>Jeder Punkt ist ein C-Atom.</b></p>
     <div id="nBild" style="text-align:center"></div><br>
     <input type="text" id="nEingabe" placeholder="z. B. 3-Methylhexan" autocapitalize="none" autocomplete="off" autocorrect="off">
     <p class="klein">Schreibe mit Bindestrichen und Kommas, z. B. <i>2,3-Dimethylbutan</i> oder <i>3-Ethyl-2-methylpentan</i>.</p>
@@ -191,8 +209,39 @@
   <button class="btn" onclick="memStart()">🔄 Neu mischen</button>
 </section>
 
+<!-- ===================== SPASS ===================== -->
+<section class="seite" id="spass" hidden>
+  <h2>😂 Molli's Spaß-Ecke</h2>
+  <div class="box spass">
+    <b>Witz des Moments:</b>
+    <p class="witz" id="witzText">Drück auf den Knopf!</p>
+    <button class="btn pink" id="witzBtn">🎲 Noch ein Witz!</button>
+  </div>
+  <div class="box spass">
+    <b>Fun Fact:</b>
+    <p class="witz" id="factText">Drück auf den Knopf!</p>
+    <button class="btn pink" id="factBtn">🤓 Noch ein Fun Fact!</button>
+  </div>
+  <div class="box spass">
+    <b>Alkan-Dating-Profile 💘</b>
+    <ul>
+      <li><b>Methan:</b> „Klein, aber fein. Suche jemanden mit 1 C. Hobbys: Gas geben.“</li>
+      <li><b>Propan:</b> „Drei Kohlenstoffe, null Drama. Ich gebe auf dem Campingplatz gern Feuer.“</li>
+      <li><b>Decan:</b> „Lange Kette, lange Namen. Ich habe 10 C-Atome und viel Zeit.“</li>
+      <li><b>2-Methylpropan:</b> „Ich bin ein Butan-Isomere mit einem kleinen Zweig. Mich gibt’s nur verzweigt.“</li>
+    </ul>
+  </div>
+  <button class="btn gelb" onclick="konfetti(60);molliSagt('Party! 🥳')">🎉 Konfetti!</button>
+</section>
+
 <p style="text-align:center"><button class="btn" id="bReset" style="background:#888">Fortschritt zurücksetzen</button></p>
 </main>
+
+<!-- Maskottchen -->
+<div id="molli">
+  <div id="molliFigur" title="Klick mich für einen Witz!">🧪</div>
+  <div id="molliText"></div>
+</div>
 
 <div id="toast"></div>
 
@@ -200,21 +249,84 @@
 // ================= GRUNDDATEN =================
 const $ = id => document.getElementById(id);
 const NAMEN = ["Methan","Ethan","Propan","Butan","Pentan","Hexan","Heptan","Octan","Nonan","Decan"];
-const SDP   = [-162,-89,-42,-1,36,69,98,126,151,174];
 const SUB   = "₀₁₂₃₄₅₆₇₈₉";
 const tief  = n => String(n).split("").map(c => SUB[c]).join("");
 const formel = n => "C" + (n > 1 ? tief(n) : "") + "H" + tief(2*n + 2);
 const RN = ["","Methyl","Ethyl","Propyl"];
 const RC = ["","#16a34a","#f97316","#c026d3"];
 const shuffle = a => { for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const zufall = a => a[Math.floor(Math.random()*a.length)];
+
+// ================= SPASS: Sprüche, Witze, Fakten =================
+const RICHTIG = [
+  "Boom! Das war so sauber wie eine Einfachbindung! 💥",
+  "Du bist ja ein kleines Genie! 🧠",
+  "Richtig! Ich bin so stolz, ich könnte ein Molekül werden! 🥹",
+  "Wow! Selbst Propan wäre beeindruckt! 🔥",
+  "Treffer! Du hast das Zeug zum Alkan-Profi! 😎",
+  "Yes! Das war ein C-nsationeller Zug! ✨",
+  "Perfekt! Dafür gibt's ein virtuelles High Five 🙌"
+];
+const FALSCH = [
+  "Ups! Aber auch Chemiker/innen machen Fehler. Meistens hinterher mit Knall 💨",
+  "Fast! Das war eine kleine Verzweigung vom richtigen Weg 🌿",
+  "Nicht schlimm! Aus Fehlern wird man klug, nicht Methan 😄",
+  "Autsch! Aber hey, jetzt weißt du es für nächstes Mal 💪",
+  "Kopf hoch! Selbst Butan musste erst lernen, ein Isomer zu sein 🤷",
+  "Daneben! Aber ich glaube an dich 💙"
+];
+const SERIE_TEXT = {
+  3:"Drei in Folge! Du bist heiß wie ein Bunsenbrenner! 🔥",
+  5:"FÜNF in Folge! Unaufhaltsam wie eine lange Kette! ⛓️",
+  8:"ACHT! Du bist eine Legende der Kohlenstoffe! 👑"
+};
+const WITZE = [
+  "Was sagt ein Methyl zur Hauptkette? „Ich häng mich an dich dran!“",
+  "Warum sind Alkane so entspannt? Sie haben nur Einfachbindungen und keinen Beziehungsstress. 😌",
+  "Treffen sich zwei Wasserstoffatome. Sagt das eine: „Ich habe ein Elektron verloren.“ Fragt das andere: „Bist du sicher?“ Sagt das erste: „Ja, ich bin positiv!“",
+  "Was ist ein Ethyl? Ein Methyl mit Zusatzwaggon. 🚃",
+  "Warum nummeriert man die Kette so, dass die Zweige kleine Nummern bekommen? Weil Zweige gern die Ersten sein wollen. 🥇",
+  "Wie nennt man ein Alkan, das gern Fußball spielt? Pen-tan-z… ähm, Pentan! ⚽ (Okay, der war schwach.)",
+  "Warum ist 2,3-Dimethylbutan nie allein? Es hat immer zwei Methyl-Freunde dabei. 👯",
+  "Der Propyl-Zweig geht zum Arzt: „Ich fühle mich so lang.“ Der Arzt: „Kein Wunder, du hast 3 C!“",
+  "Was macht ein Chemiker, wenn er Hunger hat? Er isst ein Ethanbrot. 🥪 (Bitte nicht nachmachen!)",
+  "Wie heißt das Lieblingsfach von Methan? CH₄-mie! 😅",
+  "Warum geht Hexan nie zum Friseur? Es hat schon 6 C, aber keine Haare. 💈"
+];
+const FAKTEN = [
+  "Methan ist der Hauptbestandteil von Erdgas. Auch Kühe produzieren es beim Verdauen, vor allem beim Rülpsen. 🐄",
+  "Propan wird zum Beispiel in Campingkochern und Gasgrills verwendet. 🏕️",
+  "Butan steckt in vielen Feuerzeugen. 🔥",
+  "Die „Oktanzahl“ bei Benzin hat etwas mit Octan zu tun. ⛽",
+  "Aus den ersten vier Alkanen sind Methan, Ethan, Propan und Butan bei Zimmertemperatur Gase. 💨",
+  "Die Namen ab Pentan kommen aus dem Griechischen: Penta = 5, Hexa = 6, Hepta = 7. 🏛️",
+  "Es gibt sehr viele Isomere: Schon bei Decan (C₁₀H₂₂) sind es 75! 🤯",
+  "Methan hat die kleinste Formel aller Alkane und sieht in 3D aus wie eine kleine Pyramide (Tetraeder). 🔺"
+];
+function molliSagt(t, ms) {
+  const el = $("molliText"); el.textContent = t; el.classList.add("an");
+  clearTimeout(molliSagt.t); molliSagt.t = setTimeout(() => el.classList.remove("an"), ms || 4500);
+  const f = $("molliFigur"); f.classList.remove("wackel"); void f.offsetWidth; f.classList.add("wackel");
+}
+$("molliFigur").onclick = () => molliSagt(zufall(WITZE), 8000);
+function konfetti(n) {
+  const cols = ["#f5c400","#e91e8c","#1b5e8a","#2e9e44","#f97316","#c026d3"];
+  for (let i = 0; i < (n||40); i++) {
+    const d = document.createElement("div"); d.className = "konf";
+    d.style.left = Math.random()*100 + "vw"; d.style.background = zufall(cols);
+    d.style.animationDuration = (1.5 + Math.random()*1.5) + "s"; d.style.animationDelay = Math.random()*0.4 + "s";
+    document.body.appendChild(d); setTimeout(() => d.remove(), 3500);
+  }
+}
+$("witzBtn").onclick = () => $("witzText").textContent = zufall(WITZE);
+$("factBtn").onclick = () => $("factText").textContent = zufall(FAKTEN);
 
 // ================= XP & RÄNGE =================
-const RANG = [[0,"Alkan-Anfänger/in 🐣"],[50,"Molekül-Entdecker/in 🔍"],[150,"Chemie-Profi 🧪"],[300,"Alkan-Meister/in 👑"],[500,"Legende der Kohlenwasserstoffe 🏆"]];
+const RANG = [[0,"Methyl-Mini 🌱"],[50,"Molekül-Detektiv/in 🔍"],[150,"Zickzack-Zauberer/in 🧙"],[300,"Alkan-Meister/in 👑"],[500,"Legende der Kohlenwasserstoffe 🏆"]];
 let xp = parseInt(localStorage.getItem("alkanXP")) || 0;
+function rangIndex(x) { let a = 0; RANG.forEach((r,i) => { if (x >= r[0]) a = i; }); return a; }
 function updXP() {
-  let aktuell = 0;
-  RANG.forEach((r,i) => { if (xp >= r[0]) aktuell = i; });
-  const next = RANG[aktuell+1];
+  const aktuell = rangIndex(xp), next = RANG[aktuell+1];
   $("rang").textContent = "⭐ " + xp + " XP – " + RANG[aktuell][1] + (next ? "  (nächster Rang bei " + next[0] + " XP)" : "");
   const von = RANG[aktuell][0], bis = next ? next[0] : von + 1;
   $("balkenFuell").style.width = next ? Math.min(100, (xp-von)/(bis-von)*100) + "%" : "100%";
@@ -224,39 +336,61 @@ function toast(t) {
   setTimeout(() => el.classList.remove("an"), 1600);
 }
 function addXP(n) {
+  const vorher = rangIndex(xp);
   xp += n; localStorage.setItem("alkanXP", xp); updXP(); toast("+" + n + " XP ⭐");
+  if (rangIndex(xp) > vorher) { konfetti(90); molliSagt("RANGAUFSTIEG! Du bist jetzt: " + RANG[rangIndex(xp)][1], 6000); }
 }
 $("bReset").onclick = () => {
-  if (confirm("Willst du deinen Fortschritt wirklich löschen?")) { xp = 0; localStorage.removeItem("alkanXP"); updXP(); }
+  if (confirm("Willst du deinen Fortschritt wirklich löschen?")) { xp = 0; localStorage.removeItem("alkanXP"); updXP(); molliSagt("Alles auf Anfang. Neues Abenteuer! 🚀"); }
 };
 
 // ================= NAVIGATION =================
+const BEGRUESSUNG = {
+  lernen:"Hallo! Ich bin Molli. Lies erst, dann wird gespielt! 📖",
+  quiz:"Quiz-Zeit! Ich drücke dir alle meine Atome! 🤞",
+  zeichnen:"Zeichne los! Denk dran: Jeder Knick ist ein C-Atom. ✏️",
+  benennen:"Zähle die Punkte, dann findest du den Namen! 🕵️",
+  memory:"Memory! Ich merke mir alles. Ich bin ein Molekül, ich vergesse nie. 🧠",
+  spass:"Willkommen in der Spaß-Ecke! Hier darf gelacht werden. 😂"
+};
 function zeige(id) {
   document.querySelectorAll(".seite").forEach(s => s.hidden = (s.id !== id));
   document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("aktiv", b.dataset.s === id));
   window.scrollTo(0, 0);
+  molliSagt(BEGRUESSUNG[id]);
 }
 document.querySelectorAll("#nav button").forEach(b => b.onclick = () => zeige(b.dataset.s));
 
-// ================= STRUKTUR-ZEICHNUNG (SVG) =================
-// Hauptkette: Zickzack, C1 unten. zweige: [{pos, l}] mit l = Anzahl C im Zweig
+// ================= STRUKTURFORMEL (SVG, Zickzack) =================
+// Hauptkette: C1 unten, C2 oben, ... Zweig mit l C-Atomen: l Bindungen im Zickzack.
 function struct(haupt, zweige, nummern) {
-  const sx = 60, ox = 40, O = 140, U = 190, W = 80 + (haupt-1)*sx;
+  const sx = 52, dy = 30, ox = 60, O = 190, U = 220, B = 60;
+  const W = Math.max(300, 130 + (haupt-1)*sx), Hh = 420;
   const x = i => ox + (i-1)*sx, y = i => (i % 2 ? U : O);
-  let s = '<svg viewBox="0 0 ' + W + ' 330" style="width:100%;max-width:' + Math.max(W,280) + 'px;background:#fff;border-radius:12px;border:2px solid #1b5e8a">';
-  const pts = []; for (let i = 1; i <= haupt; i++) pts.push(x(i) + "," + y(i));
-  s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+  let s = '<svg viewBox="0 0 ' + W + ' ' + Hh + '" style="width:100%;max-width:' + W + 'px;background:#fff;border-radius:12px;border:2px solid #1b5e8a">';
+  const pts = []; for (let i = 1; i <= haupt; i++) pts.push([x(i), y(i)]);
+  s += '<polyline points="' + pts.map(p => p.join(",")).join(" ") + '" fill="none" stroke="#2563eb" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+  let dots = '';
+  pts.forEach(p => dots += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5" fill="#2563eb"/>');
+  let texte = '';
   zweige.forEach(z => {
     const r = (y(z.pos) === O) ? -1 : 1;
-    const p = [x(z.pos) + "," + y(z.pos)];
-    for (let k = 1; k <= z.l; k++) p.push(x(z.pos) + "," + (y(z.pos) + r*40*k));
-    s += '<polyline points="' + p.join(" ") + '" fill="none" stroke="' + RC[z.l] + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
-    if (nummern) s += '<text x="' + (x(z.pos)+10) + '" y="' + (y(z.pos) + r*40*z.l + 5) + '" fill="' + RC[z.l] + '" font-size="14" font-weight="bold">' + RN[z.l] + '</text>';
+    let cx = x(z.pos), cy = y(z.pos);
+    const p = [[cx, cy]];
+    for (let k = 1; k <= z.l; k++) {
+      if (k % 2 === 1) { cy += r*B; }
+      else { cx += sx; cy += r*dy; }
+      p.push([cx, cy]);
+    }
+    s += '<polyline points="' + p.map(q => q.join(",")).join(" ") + '" fill="none" stroke="' + RC[z.l] + '" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+    p.slice(1).forEach(q => dots += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="5" fill="' + RC[z.l] + '"/>');
+    const e = p[p.length-1];
+    if (nummern) texte += '<text x="' + (e[0]+10) + '" y="' + (e[1] + (r < 0 ? -8 : 16)) + '" fill="' + RC[z.l] + '" font-size="14" font-weight="bold">' + RN[z.l] + ' (' + z.l + ' C)</text>';
   });
   if (nummern) for (let i = 1; i <= haupt; i++) {
-    s += '<text x="' + (x(i)-18) + '" y="' + (y(i) + (y(i) === O ? -6 : 22)) + '" fill="#2563eb" font-size="15" font-weight="bold">' + i + '</text>';
+    texte += '<text x="' + (x(i)-4) + '" y="' + (y(i) + (y(i) === O ? -12 : 26)) + '" fill="#2563eb" font-size="15" font-weight="bold">' + i + '</text>';
   }
-  return s + '</svg>';
+  return s + dots + texte + '</svg>';
 }
 
 // ================= MOLEKÜL-AUFGABEN =================
@@ -266,52 +400,55 @@ const MOL = [
   { name:"3-Methylpentan",         haupt:5, zweige:[{pos:3,l:1}] },
   { name:"3-Methylhexan",          haupt:6, zweige:[{pos:3,l:1}] },
   { name:"3-Ethylhexan",           haupt:6, zweige:[{pos:3,l:2}] },
+  { name:"3-Ethylpentan",          haupt:5, zweige:[{pos:3,l:2}] },
   { name:"4-Propylheptan",         haupt:7, zweige:[{pos:4,l:3}] },
+  { name:"3-Propylhexan",          haupt:6, zweige:[{pos:3,l:3}] },
   { name:"2,3-Dimethylbutan",      haupt:4, zweige:[{pos:2,l:1},{pos:3,l:1}] },
   { name:"2,4-Dimethylhexan",      haupt:6, zweige:[{pos:2,l:1},{pos:4,l:1}] },
   { name:"3,4-Dimethylhexan",      haupt:6, zweige:[{pos:3,l:1},{pos:4,l:1}] },
   { name:"3-Ethyl-2-methylpentan", haupt:5, zweige:[{pos:2,l:1},{pos:3,l:2}] },
+  { name:"3-Ethyl-4-propylheptan", haupt:7, zweige:[{pos:3,l:2},{pos:4,l:3}] },
   { name:"4-Ethyl-6-methylnonan",  haupt:9, zweige:[{pos:4,l:2},{pos:6,l:1}] }
 ];
 
 // ================= LERNEN: Tabelle & Bilder =================
 (function lernenAufbauen() {
-  let t = "<tr><th>C-Atome</th><th>Name</th><th>Formel</th><th>Siedetemp.</th></tr>";
-  NAMEN.forEach((n,i) => t += "<tr><td>" + (i+1) + "</td><td><b>" + n + "</b></td><td>" + formel(i+1) + "</td><td>" + SDP[i] + " °C</td></tr>");
+  let t = "<tr><th>C-Atome</th><th>Name</th><th>Formel</th></tr>";
+  NAMEN.forEach((n,i) => t += "<tr><td>" + (i+1) + "</td><td><b>" + n + "</b></td><td>" + formel(i+1) + "</td></tr>");
   $("tabelle").innerHTML = t;
-  const farbe = ["","#16a34a","#f97316","#c026d3"];
-  const emoji = ["","🌱 ganz kurz","🌿 mittel","🌳 länger"];
+  const emoji = ["","🌱 ganz kurz: 1 C","🌿 mittel: 2 C","🌳 länger: 3 C"];
   let k = "";
   for (let l = 1; l <= 3; l++) {
-    k += '<div class="karte"><h3 style="color:' + farbe[l] + '">' + RN[l] + ' = ' + l + ' C</h3>' +
-         struct(5, [{pos:3,l:l}], false) + '<p>' + emoji[l] + '</p></div>';
+    k += '<div class="karte"><h3 style="color:' + RC[l] + '">' + RN[l] + ' = ' + l + ' C</h3>' +
+         struct(5, [{pos:3,l:l}], true) + '<p>' + emoji[l] + '</p></div>';
   }
   $("kartenReste").innerHTML = k;
-  $("beispielBild").innerHTML = struct(9, [{pos:4,l:2},{pos:6,l:1}], true);
+  $("beispielBild").innerHTML  = struct(9, [{pos:4,l:2},{pos:6,l:1}], true);
+  $("beispielBild2").innerHTML = struct(7, [{pos:4,l:3}], true);
 })();
 
 // ================= QUIZ =================
-// r = richtige Antwort, w = falsche Antworten, h = Erklärung
 const FRAGEN = [
   { f:"Wie lautet die allgemeine Formel der Alkane?", r:"CₙH₂ₙ₊₂", w:["CₙH₂ₙ","CₙH₂ₙ₋₂"], h:"Bei n C-Atomen gibt es 2n + 2 H-Atome." },
   { f:"Wie viele H-Atome hat ein Alkan mit 9 C-Atomen?", r:"20", w:["18","19"], h:"2·9 + 2 = 20 (Nonan: C₉H₂₀)." },
   { f:"Wie heißt das Alkan mit 6 C-Atomen?", r:"Hexan", w:["Heptan","Pentan"], h:"Hexa = 6." },
   { f:"Welche Summenformel hat Butan?", r:"C₄H₁₀", w:["C₄H₈","C₅H₁₀"], h:"4 C → 2·4 + 2 = 10 H." },
+  { f:"Ein Zweig hat 1 C-Atom. Wie heißt er?", r:"Methyl", w:["Ethyl","Propyl"], h:"Methan hat 1 C → Methyl." },
   { f:"Ein Zweig hat 2 C-Atome. Wie heißt er?", r:"Ethyl", w:["Methyl","Propyl"], h:"Ethan hat 2 C → Ethyl." },
   { f:"Ein Zweig hat 3 C-Atome. Wie heißt er?", r:"Propyl", w:["Ethyl","Methyl"], h:"Propan hat 3 C → Propyl." },
+  { f:"Aus welchem Alkan wird der Rest Propyl?", r:"Propan", w:["Butan","Ethan"], h:"-an wird zu -yl: Propan → Propyl." },
+  { f:"Wie viele Striche hat ein Propyl-Zweig in der Zeichnung?", r:"3", w:["2","4"], h:"3 C-Atome = 3 Bindungen im Zickzack." },
   { f:"Wie lang ist die Hauptkette bei 4-Ethyl-6-methylnonan?", r:"9 C-Atome", w:["6 C-Atome","12 C-Atome"], h:"nonan = 9. Die 12 sind alle C-Atome zusammen." },
   { f:"Wie viele C-Atome hat 4-Ethyl-6-methylnonan insgesamt?", r:"12", w:["9","11"], h:"9 + 2 (Ethyl) + 1 (Methyl) = 12." },
+  { f:"Wie viele C-Atome hat 4-Propylheptan insgesamt?", r:"10", w:["7","9"], h:"7 (Heptan) + 3 (Propyl) = 10." },
+  { f:"An welchem C-Atom hängt der Zweig bei 4-Propylheptan?", r:"C4", w:["C3","C7"], h:"Die Zahl vor dem Zweig-Namen zeigt die Position." },
   { f:"Welcher Name ist richtig geordnet?", r:"3-Ethyl-2-methylpentan", w:["2-Methyl-3-ethylpentan","3-Methyl-2-ethylpentan"], h:"Alphabetisch: E vor M." },
+  { f:"Welcher Name ist richtig geordnet?", r:"3-Ethyl-4-propylheptan", w:["4-Propyl-3-ethylheptan","3-Propyl-4-ethylheptan"], h:"Alphabetisch: E vor P." },
   { f:"Wie viele C-Atome hat 2,3-Dimethylbutan insgesamt?", r:"6", w:["4","5"], h:"Butan = 4 C, plus 2 Methyl-Zweige = 6." },
   { f:"Was bedeutet „di“ in Dimethyl?", r:"zwei gleiche Zweige", w:["zwei C-Atome in der Kette","eine Doppelbindung"], h:"di = 2, tri = 3 gleiche Zweige." },
   { f:"Wie wird die Hauptkette nummeriert?", r:"So, dass die Zweige die kleinstmöglichen Nummern bekommen", w:["Immer von links nach rechts","So, dass die größte Nummer vorne steht"], h:"Das ist Schritt 2 im 5-Schritte-Plan." },
-  { f:"Warum steigt die Siedetemperatur mit der Kettenlänge?", r:"Die Van-der-Waals-Kräfte werden stärker", w:["Es entstehen Wasserstoffbrücken","Es entstehen Ionenbindungen"], h:"Mehr Oberfläche → stärkere Van-der-Waals-Kräfte." },
-  { f:"Welcher Stoff siedet höher?", r:"Pentan", w:["2,2-Dimethylpropan","Beide gleich"], h:"Verzweigte Moleküle haben weniger Kontaktfläche → niedrigere Siedetemperatur." },
   { f:"Wie viele Konstitutionsisomere hat Butan?", r:"2", w:["1","3"], h:"Butan und 2-Methylpropan." },
   { f:"Wie viele Konstitutionsisomere hat Pentan?", r:"3", w:["2","5"], h:"Pentan, 2-Methylbutan, 2,2-Dimethylpropan." },
-  { f:"Lösen sich Alkane in Wasser?", r:"Nein, sie sind unpolar", w:["Ja, sie bilden Wasserstoffbrücken","Ja, aber nur Methan"], h:"Unpolares löst sich in Unpolarem, nicht in Wasser." },
-  { f:"Wie nennt man die Reaktion von Methan mit Chlor bei Licht?", r:"Radikalische Substitution", w:["Addition","Elimination"], h:"Ein H-Atom wird durch ein Cl-Atom ersetzt." },
-  { f:"Was entsteht bei der vollständigen Verbrennung von Alkanen?", r:"CO₂ und H₂O", w:["CO und H₂","C und H₂O"], h:"Alkan + Sauerstoff → Kohlenstoffdioxid + Wasser." },
   { f:"Wodurch unterscheiden sich benachbarte Glieder der homologen Reihe?", r:"Durch eine CH₂-Gruppe", w:["Durch eine OH-Gruppe","Durch ein einzelnes C-Atom ohne H"], h:"Methan → Ethan: +CH₂." },
   { f:"Welche Bindungen gibt es in Alkanen?", r:"Nur C–C- und C–H-Einfachbindungen", w:["Auch C=C-Doppelbindungen","Auch C≡C-Dreifachbindungen"], h:"Alkane sind gesättigt." }
 ];
@@ -345,12 +482,14 @@ function quizAntwort(btn, text, q) {
   const fb = $("qFb");
   if (text === q.r) {
     serie++; qPunkte++;
-    const bonus = Math.min(serie - 1, 5);
-    addXP(10 + bonus);
+    addXP(10 + Math.min(serie - 1, 5));
     fb.className = "fb gut"; fb.textContent = "🎉 Richtig! " + q.h;
+    molliSagt(SERIE_TEXT[serie] || zufall(RICHTIG));
+    konfetti(serie >= 3 ? 50 : 18);
   } else {
     btn.classList.add("nein"); serie = 0; leben--;
     fb.className = "fb schlecht"; fb.textContent = "😅 Nicht ganz. " + q.h;
+    molliSagt(zufall(FALSCH));
   }
   qi++;
   const w = document.createElement("button");
@@ -360,10 +499,13 @@ function quizAntwort(btn, text, q) {
 }
 function quizEnde() {
   const geschafft = leben > 0;
-  if (geschafft && qPunkte === qListe.length) addXP(30);
+  const perfekt = geschafft && qPunkte === qListe.length;
+  if (perfekt) { addXP(30); konfetti(120); }
+  molliSagt(perfekt ? "PERFEKT! 10 von 10! Ich muss mich kurz hinsetzen. 🤩" :
+            geschafft ? "Geschafft! Das war stark! 💪" : "Alle Leben weg! Aber Üben macht den Alkan-Meister! 🔁", 6000);
   $("quizBox").innerHTML = '<div class="box"><h3>' + (geschafft ? "🏁 Geschafft!" : "💥 Keine Leben mehr!") + '</h3>' +
     '<p>Du hast <b>' + qPunkte + ' von ' + qListe.length + '</b> richtig.' +
-    (geschafft && qPunkte === qListe.length ? " Perfekt! Bonus: +30 XP 🌟" : "") + '</p>' +
+    (perfekt ? " Perfekt! Bonus: +30 XP 🌟" : "") + '</p>' +
     '<button class="btn gelb" onclick="quizStart()">🔄 Nochmal spielen</button></div>';
 }
 quizStart();
@@ -411,10 +553,10 @@ function feldLeeren() {
   striche = 0; $("strichZahl").textContent = 0;
   $("zFb").textContent = ""; $("zLoesung").innerHTML = "";
 }
-$("bLoeschen").onclick = feldLeeren;
+$("bLoeschen").onclick = () => { feldLeeren(); molliSagt("Weg damit! Das Blatt ist wieder blitzeblank. ✨"); };
 
 function neueZeichenAufgabe() {
-  let neu; do { neu = MOL[Math.floor(Math.random()*MOL.length)]; } while (neu === zAkt && MOL.length > 1);
+  let neu; do { neu = zufall(MOL); } while (neu === zAkt && MOL.length > 1);
   zAkt = neu; zXPgeholt = false;
   $("zAufgabe").innerHTML = "Zeichne <b>" + zAkt.name + "</b>";
   feldLeeren();
@@ -422,9 +564,9 @@ function neueZeichenAufgabe() {
 $("bNeuZ").onclick = neueZeichenAufgabe;
 $("bLoesung").onclick = () => {
   $("zLoesung").innerHTML = "<p><b>So kann die Lösung aussehen</b> (deine darf anders gedreht sein):</p>" + struct(zAkt.haupt, zAkt.zweige, true);
+  molliSagt("Spicken erlaubt! Aber nur dieses eine Mal. 😉");
 };
 
-// Pixel pro Farbe zählen
 const FARBEN = ["#2563eb","#16a34a","#f97316","#c026d3"];
 const FNAME = {"#2563eb":"Hauptkette (blau)","#16a34a":"Methyl (grün)","#f97316":"Ethyl (orange)","#c026d3":"Propyl (lila)"};
 const rgb = h => [1,3,5].map(i => parseInt(h.substr(i,2),16));
@@ -444,9 +586,9 @@ function pixelZaehlen() {
 $("bPruefen").onclick = () => {
   const fb = $("zFb"), px = pixelZaehlen(), haupt = "#2563eb";
   fb.className = "fb schlecht";
-  if (px[haupt] < 300) { fb.textContent = "🔵 Zeichne zuerst die Hauptkette in Blau (Zickzack)!"; return; }
+  if (px[haupt] < 300) { fb.textContent = "🔵 Zeichne zuerst die Hauptkette in Blau (Zickzack)!"; molliSagt("Das Blatt ist noch ziemlich leer. Ich sehe nur Gitter! 👀"); return; }
   if (striche < 1 + zAkt.zweige.length) {
-    fb.textContent = "✏️ Noch zu wenige Striche. Du brauchst die Hauptkette und " + zAkt.zweige.length + " Zweig(e)."; return;
+    fb.textContent = "✏️ Noch zu wenige Striche. Du brauchst die Hauptkette und " + zAkt.zweige.length + " Zweig(e)."; molliSagt("Da fehlt noch ein Zweig! 🌿"); return;
   }
   const erwartet = {};
   zAkt.zweige.forEach(z => { const c = RC[z.l]; erwartet[c] = (erwartet[c] || 0) + z.l; });
@@ -465,9 +607,11 @@ $("bPruefen").onclick = () => {
   if (ok) {
     fb.className = "fb gut";
     fb.innerHTML = "🎉 Super! Das sieht nach <b>" + zAkt.name + "</b> aus.<br>" + m.join("<br>");
+    molliSagt("Kunstwerk! Das hängt ab sofort im Chemie-Museum. 🖼️"); konfetti(70);
     if (!zXPgeholt) { zXPgeholt = true; addXP(20); }
   } else {
     fb.innerHTML = m.join("<br>") + "<br>Tipp: Schau dir die Lösung an. 👀";
+    molliSagt(zufall(FALSCH));
   }
 };
 neueZeichenAufgabe();
@@ -478,15 +622,25 @@ const norm = s => s.toLowerCase().replace(/\s+/g, "").replace(/[–—]/g, "-");
 const nurBuchst = s => s.replace(/[^a-z0-9]/g, "");
 
 function neueNameAufgabe() {
-  let neu; do { neu = MOL[Math.floor(Math.random()*MOL.length)]; } while (neu === nAkt && MOL.length > 1);
+  let neu; do { neu = zufall(MOL); } while (neu === nAkt && MOL.length > 1);
   nAkt = neu; nVersuche = 0; nGeloest = false;
-  $("nBild").innerHTML = struct(nAkt.haupt, nAkt.zweige, true);
+  $("nBild").innerHTML = struct(nAkt.haupt, nAkt.zweige, false).replace("</svg>", nummernNur(nAkt) + "</svg>");
   $("nEingabe").value = ""; $("nFb").textContent = "";
+}
+function nummernNur(m) {
+  const sx = 52, ox = 60, O = 190, U = 220;
+  let t = "";
+  for (let i = 1; i <= m.haupt; i++) {
+    const yy = (i % 2 ? U : O), x = ox + (i-1)*sx;
+    t += '<text x="' + (x-4) + '" y="' + (yy + (yy === O ? -12 : 26)) + '" fill="#2563eb" font-size="15" font-weight="bold">' + i + '</text>';
+  }
+  return t;
 }
 $("nNeu").onclick = neueNameAufgabe;
 $("nLoesung").onclick = () => {
   nGeloest = true; $("nFb").className = "fb schlecht";
   $("nFb").textContent = "Lösung: " + nAkt.name;
+  molliSagt("Jetzt weißt du es! Merk es dir für die nächste Runde. 🧠");
 };
 $("nCheck").onclick = () => {
   if (nGeloest) return;
@@ -495,6 +649,8 @@ $("nCheck").onclick = () => {
   if (ein === soll) {
     nGeloest = true; fb.className = "fb gut";
     fb.textContent = "🎉 Richtig! " + nAkt.name;
+    molliSagt(nVersuche === 1 ? "Beim ersten Versuch! Du bist ein Namensgenie! 🏅" : zufall(RICHTIG));
+    konfetti(50);
     addXP(nVersuche === 1 ? 15 : 5);
     return;
   }
@@ -502,12 +658,16 @@ $("nCheck").onclick = () => {
   const grund = NAMEN[nAkt.haupt - 1].toLowerCase();
   if (nurBuchst(ein) === nurBuchst(soll)) {
     fb.textContent = "😮 Fast! Die Buchstaben stimmen, aber achte auf Bindestriche und Kommas.";
+    molliSagt("So knapp! Nur die Satzzeichen zicken. 🤏");
   } else if (!ein.endsWith(grund)) {
     fb.textContent = "😅 Zähle die blaue Hauptkette. Wie viele C-Atome hat sie? Danach richtet sich die Endung.";
+    molliSagt("Tipp von Molli: Erst die blaue Kette zählen! 🔵");
   } else if (!/\d/.test(ein)) {
     fb.textContent = "😅 Es fehlt die Nummer, an der der Zweig hängt.";
+    molliSagt("Ohne Nummer weiß der Zweig nicht, wo er wohnt! 🏠");
   } else {
-    fb.textContent = "😅 Fast! Prüfe die Nummern, die Länge der Zweige (1 C = Methyl, 2 C = Ethyl, 3 C = Propyl) und die ABC-Reihenfolge.";
+    fb.textContent = "😅 Fast! Zähle die Punkte in jedem Zweig (1 C = Methyl, 2 C = Ethyl, 3 C = Propyl) und prüfe Nummern und ABC-Reihenfolge.";
+    molliSagt(zufall(FALSCH));
   }
 };
 $("nEingabe").addEventListener("keydown", e => { if (e.key === "Enter") $("nCheck").click(); });
@@ -540,11 +700,12 @@ function memKlick(b, k) {
     if (a.k.id === c.k.id) {
       [a, c].forEach(o => { o.b.classList.remove("offen"); o.b.classList.add("fertig"); });
       memOffen = []; memFertig++;
+      molliSagt(zufall(["Ein Paar! 💞","Zusammen passt's! 🧩","Treffer! 🎯"]), 1800);
       if (memFertig === 6) {
-        const bonus = Math.max(10, 50 - (memZuege - 6)*4);
         $("memFb").className = "fb gut";
         $("memFb").textContent = "🏆 Geschafft in " + memZuege + " Zügen!";
-        addXP(bonus);
+        konfetti(100); molliSagt("Alle Paare gefunden! Du hast ein Elefantengedächtnis! 🐘", 6000);
+        addXP(Math.max(10, 50 - (memZuege - 6)*4));
       }
     } else {
       memSperre = true;
@@ -557,6 +718,9 @@ function memKlick(b, k) {
 }
 memStart();
 
+// ================= START =================
+$("witzText").textContent = zufall(WITZE);
+$("factText").textContent = zufall(FAKTEN);
 updXP();
 zeige("lernen");
 </script>
